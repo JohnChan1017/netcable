@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Controls.LogView"
+             x:DataType="controls:LogView" x:Name="Root">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <ItemsControl ItemsSource="{Binding #Root.Logs}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="vm:LogEntry">
+          <Grid ColumnDefinitions="62,42,*" Margin="0,1">
+            <TextBlock Grid.Column="0" Text="{Binding TimeText}" FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11" Foreground="#64748B" />
+            <TextBlock Grid.Column="1" Text="{Binding KindText}" FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11" Foreground="#64748B" />
+            <TextBlock Grid.Column="2" Text="{Binding Text}" FontFamily="Cascadia Mono, Consolas, monospace" FontSize="12" Foreground="#CBD5E1" TextWrapping="Wrap" />
+          </Grid>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </ScrollViewer>
+</UserControl>

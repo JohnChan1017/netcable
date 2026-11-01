@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:vmbase="using:NetCable.Desktop.ViewModels"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.DepsView"
+             x:DataType="vm:DepsViewModel">
+  <Grid RowDefinitions="Auto,*,Auto,130">
+    <!-- 说明 + 操作按钮 -->
+    <Border Grid.Row="0" Classes="card">
+      <StackPanel Spacing="10">
+        <TextBlock FontSize="12" Classes="muted" TextWrapping="Wrap"
+                   Text="NetCable 不随应用分发 Npcap：Npcap 对个人/教育用途免费，但再分发需要 Nmap 的 Npcap OEM 授权。本页只做依赖检测与安装引导——安装动作由你确认后调用官方安装包完成，不会自动安装任何组件。" />
+        <WrapPanel Orientation="Horizontal">
+          <Button Classes="primary" Content="重新检测" Command="{Binding RunCommand}"
+                  IsEnabled="{Binding !IsRunning}" Margin="0,0,10,0" />
+          <Button Classes="ghost" Content="打开 Npcap 下载页" Command="{Binding OpenDownloadPageCommand}"
+                  Margin="0,0,10,0" />
+          <Button Classes="ghost" Content="静默安装 Npcap" Command="{Binding InstallNpcapCommand}"
+                  IsEnabled="{Binding CanInstallNpcap}" Margin="0,0,14,0" />
+          <TextBlock Text="{Binding StatusText}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
+        </WrapPanel>
+        <TextBlock Text="{Binding InstallHint}" FontSize="11" Classes="dim" TextWrapping="Wrap" />
+      </StackPanel>
+    </Border>
+
+    <!-- 依赖表 -->
+    <Border Grid.Row="1" Margin="0,12,0,0" Classes="card" Padding="12">
+      <Grid RowDefinitions="Auto,Auto,*">
+        <Grid ColumnDefinitions="200,86,104,205,*" Margin="0,0,0,6">
+          <TextBlock Grid.Column="0" Text="名称" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="1" Text="状态" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="2" Text="版本" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="3" Text="路径" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="4" Text="用途与提示" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+        </Grid>
+        <Border Grid.Row="1" Height="1" Background="#22304A" Margin="0,0,0,4" />
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+          <ItemsControl ItemsSource="{Binding Dependencies}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:DependencyRow">
+                <Grid ColumnDefinitions="200,86,104,205,*" Margin="0,4">
+                  <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="12" Foreground="#E2E8F0"
+                             TextWrapping="Wrap" Margin="0,0,8,0" />
+                  <TextBlock Grid.Column="1" Text="✅ 已安装" FontSize="12" Foreground="#34D399"
+                             IsVisible="{Binding Installed}" />
+                  <TextBlock Grid.Column="1" Text="❌ 未安装" FontSize="12" Foreground="#F87171"
+                             IsVisible="{Binding !Installed}" />
+                  <TextBlock Grid.Column="2" Text="{Binding VersionText}" FontSize="11" Foreground="#94A3B8"
+                             FontFamily="Cascadia Mono, Consolas, monospace" Margin="0,1,8,0" />
+                  <TextBlock Grid.Column="3" Text="{Binding PathText}" FontSize="11" Foreground="#64748B"
+                             FontFamily="Cascadia Mono, Consolas, monospace" TextTrimming="CharacterEllipsis"
+                             ToolTip.Tip="{Binding PathText}" Margin="0,1,8,0" />
+                  <TextBlock Grid.Column="4" Text="{Binding Detail}" FontSize="11" Foreground="#94A3B8"
+                             TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis"
+                             ToolTip.Tip="{Binding Detail}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </Grid>
+    </Border>
+
+    <!-- 能力说明 + 环境信息 -->
+    <Border Grid.Row="2" Margin="0,12,0,0" Classes="card" Padding="12">
+      <Grid ColumnDefinitions="*,330">
+        <StackPanel Grid.Column="0" Spacing="5">
+          <TextBlock Text="能力说明" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" Margin="0,0,0,1" />
+          <TextBlock FontSize="11" Classes="muted" TextWrapping="Wrap"
+                     Text="• 读 AP 列表 / 管理帧 IE 不需要 Npcap：走 Windows WLAN API，但需要管理员权限。" />
+          <TextBlock FontSize="11" Classes="muted" TextWrapping="Wrap"
+                     Text="• LLDP / CDP 邻居发现可用 Windows 内置 pktmon 替代 Wireshark（需要管理员权限）。" />
+          <TextBlock FontSize="11" Classes="muted" TextWrapping="Wrap"
+                     Text="• 802.11 原始管理帧需要 Npcap + 支持 monitor mode 的网卡驱动。" />
+          <TextBlock Text="{Binding PrivilegeText}" FontSize="11" Classes="dim" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Border Grid.Column="1" Background="#0E1626" BorderBrush="#22304A" BorderThickness="1"
+                CornerRadius="6" Padding="10,8" Margin="12,0,0,0">
+          <StackPanel Spacing="4">
+            <TextBlock Text="环境信息" FontSize="10" Foreground="#64748B" />
+            <ItemsControl ItemsSource="{Binding Rows}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vmbase:ResultRow">
+                  <Grid ColumnDefinitions="82,*" Margin="0,1">
+                    <TextBlock Grid.Column="0" Text="{Binding Key}" FontSize="10" Foreground="#64748B" />
+                    <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="10" Foreground="#94A3B8"
+                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Value}" />
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Border>
+
+    <!-- 日志 -->
+    <Border Grid.Row="3" Margin="0,12,0,0" Classes="card" Padding="12">
+      <controls:LogView Logs="{Binding Log}" />
+    </Border>
+  </Grid>
+</UserControl>
+
+

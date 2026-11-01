@@ -1,0 +1,110 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.AboutView"
+             x:DataType="vm:AboutViewModel">
+  <Grid RowDefinitions="Auto,*,Auto,120">
+    <!-- 版本信息 + 操作 -->
+    <Border Grid.Row="0" Classes="card">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Spacing="5">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="NetCable" FontSize="24" FontWeight="Bold" Foreground="#34D399" />
+            <TextBlock Text="{Binding VersionText}" FontSize="13" Foreground="#94A3B8"
+                       FontFamily="Cascadia Mono, Consolas, monospace" VerticalAlignment="Bottom"
+                       Margin="0,0,0,4" />
+          </StackPanel>
+          <TextBlock Text="{Binding PlatformText}" FontSize="11" Classes="muted" />
+          <TextBlock FontSize="11" Foreground="#F59E0B" TextWrapping="Wrap"
+                     Text="⚠ 本版本未做代码签名：首次运行 Windows SmartScreen 可能提示“未知发布者”，属正常现象。" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button Classes="primary" Content="检查更新" Command="{Binding RunCommand}"
+                    IsEnabled="{Binding !IsRunning}" />
+            <Button Classes="ghost" Content="取消" Command="{Binding CancelAllCommand}"
+                    IsEnabled="{Binding IsBusy}" />
+            <Button Classes="ghost" Content="GitHub Releases" Command="{Binding OpenReleasesPageCommand}" />
+          </StackPanel>
+          <TextBlock Text="{Binding StatusText}" Classes="muted" FontSize="11" HorizontalAlignment="Right" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- 更新状态 -->
+    <Border Grid.Row="1" Margin="0,12,0,0" Classes="card" Padding="14">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="10">
+          <TextBlock Text="点击「检查更新」查询 GitHub Releases 的最新版本。"
+                     Classes="muted" FontSize="13" TextWrapping="Wrap"
+                     IsVisible="{Binding Idle}" />
+          <TextBlock Text="{Binding UpdateHeadline}" Foreground="#34D399" FontSize="16"
+                     FontWeight="SemiBold" TextWrapping="Wrap" IsVisible="{Binding HasUpdate}" />
+          <TextBlock Text="✅ 已是最新版本" Foreground="#34D399" FontSize="16"
+                     FontWeight="SemiBold" IsVisible="{Binding IsUpToDate}" />
+          <TextBlock Text="{Binding ErrorMessage}" Foreground="#F87171" FontSize="13"
+                     TextWrapping="Wrap" IsVisible="{Binding CheckFailed}" />
+
+          <TextBlock FontSize="11" Classes="dim" TextWrapping="Wrap"
+                     Text="NetCable 是 NETworkManager 的跨平台重写版（Windows / macOS / Linux），基于 Avalonia UI + .NET 构建；更新检查只读取 GitHub Releases 的公开信息。" />
+
+          <controls:ResultTable Rows="{Binding Rows}" KeyHeader="更新信息" ValueHeader="值"
+                               ExtraHeader="备注" IsVisible="{Binding ShowResult}" />
+
+          <StackPanel Spacing="8" IsVisible="{Binding HasUpdate}">
+            <TextBlock Text="Release Notes" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" Margin="0,4,0,0" />
+            <TextBox Text="{Binding NotesText}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                     Height="140" FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,2,0,0">
+              <Button Classes="primary" Content="下载并安装" Command="{Binding DownloadAndInstallCommand}"
+                      IsEnabled="{Binding CanDownload}" />
+              <Button Classes="ghost" Content="打开发布页" Command="{Binding OpenReleasePageCommand}" />
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel Spacing="4" IsVisible="{Binding !HasUpdate}">
+            <TextBlock Text="更新说明" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" Margin="0,4,0,0" />
+            <TextBlock FontSize="11" Classes="muted" TextWrapping="Wrap"
+                       Text="• 检查更新只访问 GitHub 公开 API（api.github.com），不上传任何本机数据。" />
+            <TextBlock FontSize="11" Classes="muted" TextWrapping="Wrap"
+                       Text="• 安装包来自 GitHub Releases，未做代码签名；首次运行时 SmartScreen 可能提示未知发布者。" />
+            <TextBlock FontSize="11" Classes="muted" TextWrapping="Wrap"
+                       Text="• Windows：MSI 由 msiexec 静默安装（权限不足时自动 UAC 提权）；ZIP 会打开所在目录供手动替换。" />
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding IsDownloading}">
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progress}" Width="420" Height="10"
+                         VerticalAlignment="Center" />
+            <TextBlock Text="{Binding DownloadStatus}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
+          </StackPanel>
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+
+    <!-- 项目 / 许可证 / 数据来源 -->
+    <Border Grid.Row="2" Margin="0,12,0,0" Classes="card" Padding="12">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Spacing="3">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="项目仓库：" FontSize="11" Classes="muted" />
+            <TextBlock Text="{Binding RepoUrl}" FontSize="11" Foreground="#34D399"
+                       FontFamily="Cascadia Mono, Consolas, monospace" />
+            <TextBlock Text="  ·  许可证：GPL-3.0" FontSize="11" Classes="muted" />
+          </StackPanel>
+          <TextBlock FontSize="11" Classes="dim" TextWrapping="Wrap"
+                     Text="数据来源：检查更新会访问 api.github.com/repos/JohnChan1017/netcable/releases/latest；安装包从 GitHub Releases 下载。下载与安装过程记录在下方日志。" />
+        </StackPanel>
+        <Button Grid.Column="1" Classes="ghost" Content="打开 GitHub 仓库"
+                Command="{Binding OpenRepoPageCommand}" VerticalAlignment="Center" Margin="12,0,0,0" />
+      </Grid>
+    </Border>
+
+    <!-- 日志 -->
+    <Border Grid.Row="3" Margin="0,12,0,0" Classes="card" Padding="12">
+      <controls:LogView Logs="{Binding Log}" />
+    </Border>
+  </Grid>
+</UserControl>

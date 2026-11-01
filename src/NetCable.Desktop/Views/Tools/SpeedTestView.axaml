@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.SpeedTestView"
+             x:DataType="vm:SpeedTestViewModel">
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Border Grid.Row="0" Classes="card">
+      <StackPanel Spacing="10">
+        <WrapPanel Orientation="Horizontal">
+          <Button Classes="primary" Content="开始测速" Command="{Binding RunCommand}"
+                  IsEnabled="{Binding !IsRunning}" VerticalAlignment="Center" Margin="0,0,10,8" />
+          <Button Classes="ghost" Content="停止" Command="{Binding CancelCommand}"
+                  IsEnabled="{Binding IsRunning}" VerticalAlignment="Center" Margin="0,0,14,8" />
+          <TextBlock Text="{Binding StatusText}" Classes="muted" FontSize="12"
+                     VerticalAlignment="Center" Margin="0,0,0,8" />
+        </WrapPanel>
+        <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0">
+          <ProgressBar Grid.Column="0" Minimum="0" Maximum="100" Value="{Binding Progress}"
+                       Height="10" VerticalAlignment="Center" />
+          <TextBlock Grid.Column="1" Text="{Binding Phase}" Classes="muted" FontSize="12"
+                     VerticalAlignment="Center" Margin="12,0,0,0" Width="180" TextAlignment="Right" />
+        </Grid>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Margin="0,12,0,0" Classes="card" Padding="16">
+      <Grid ColumnDefinitions="*,*,*">
+        <StackPanel Grid.Column="0" Spacing="4">
+          <TextBlock Text="延迟（Latency）" FontSize="11" Classes="muted" />
+          <TextBlock Text="{Binding LatencyText}" FontFamily="Cascadia Mono, Consolas, monospace"
+                     FontSize="26" FontWeight="SemiBold" Foreground="#34D399" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Spacing="4">
+          <TextBlock Text="下行（Download）" FontSize="11" Classes="muted" />
+          <TextBlock Text="{Binding DownloadText}" FontFamily="Cascadia Mono, Consolas, monospace"
+                     FontSize="26" FontWeight="SemiBold" Foreground="#34D399" />
+        </StackPanel>
+        <StackPanel Grid.Column="2" Spacing="4">
+          <TextBlock Text="上行（Upload）" FontSize="11" Classes="muted" />
+          <TextBlock Text="{Binding UploadText}" FontFamily="Cascadia Mono, Consolas, monospace"
+                     FontSize="26" FontWeight="SemiBold" Foreground="#34D399" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="2" Margin="0,12,0,0" Classes="card" Padding="12">
+      <Grid RowDefinitions="Auto,Auto,*">
+        <TextBlock Text="{Binding Summary}" FontFamily="Cascadia Mono, Consolas, monospace"
+                   FontSize="12" Foreground="#34D399" TextWrapping="Wrap" Margin="0,0,0,8" />
+        <TextBlock Grid.Row="1" Text="{Binding EndpointHint}" FontSize="11" Classes="dim" Margin="0,0,0,8" />
+        <controls:LogView Grid.Row="2" Logs="{Binding Log}" />
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

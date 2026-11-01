@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>NetCable.Desktop</RootNamespace>
+    <AssemblyName>NetCable</AssemblyName>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\netcable.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <NuGetAudit>false</NuGetAudit>
+    <!-- 指定 RID 时自动自包含（打包绿色版用）。
+         注意不要把 SelfContained 作为全局属性传进来：那会让被引用的库项目
+         也去要 Microsoft.WindowsDesktop.App/AspNetCore.App 运行时包。 -->
+    <SelfContained Condition="'$(RuntimeIdentifier)' != ''">true</SelfContained>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.22" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+  <!-- 关键：RID/SelfContained 是全局属性，会级联到被引用的库项目，
+       导致库项目也去要 Microsoft.WindowsDesktop.App/AspNetCore.App 运行时包（离线源没有）。
+       把这几项从 ProjectReference 的属性传递中剔除，库项目仍按普通方式构建。 -->
+  <ItemDefinitionGroup>
+    <ProjectReference>
+      <GlobalPropertiesToRemove>RuntimeIdentifier;RuntimeIdentifiers;SelfContained;PlatformTarget;PublishDir</GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetCable.Core\NetCable.Core.csproj" />
+    <ProjectReference Include="..\NetCable.Services.Network\NetCable.Services.Network.csproj" />
+    <ProjectReference Include="..\NetCable.Services.Lookup\NetCable.Services.Lookup.csproj" />
+    <ProjectReference Include="..\NetCable.Services.Platform\NetCable.Services.Platform.csproj" />
+  </ItemGroup>
+</Project>

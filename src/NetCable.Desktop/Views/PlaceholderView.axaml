@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels"
+             x:Class="NetCable.Desktop.Views.PlaceholderView"
+             x:DataType="vm:PlaceholderViewModel">
+  <Border Classes="card" VerticalAlignment="Top" HorizontalAlignment="Left" MaxWidth="720">
+    <StackPanel Spacing="10">
+      <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="SemiBold" Foreground="#F1F5F9" />
+      <TextBlock Text="{Binding Description}" Classes="muted" TextWrapping="Wrap" />
+      <TextBlock Text="{Binding Note}" Foreground="#F59E0B" TextWrapping="Wrap" />
+    </StackPanel>
+  </Border>
+</UserControl>

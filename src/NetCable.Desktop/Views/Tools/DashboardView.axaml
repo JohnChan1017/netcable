@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Border Grid.Row="0" Classes="card">
+      <StackPanel Spacing="10">
+        <WrapPanel Orientation="Horizontal">
+          <CheckBox Content="查询公网出口 IP" IsChecked="{Binding IncludePublicIp}"
+                    VerticalAlignment="Center" Margin="0,0,18,8" />
+          <Button Classes="primary" Content="开始采集" Command="{Binding RunCommand}"
+                  IsEnabled="{Binding !IsRunning}" VerticalAlignment="Center" Margin="0,0,10,8" />
+          <Button Classes="ghost" Content="停止" Command="{Binding CancelCommand}"
+                  IsEnabled="{Binding IsRunning}" VerticalAlignment="Center" Margin="0,0,14,8" />
+          <TextBlock Text="{Binding StatusText}" Classes="muted" FontSize="12"
+                     VerticalAlignment="Center" Margin="0,0,0,8" />
+        </WrapPanel>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Margin="0,12,0,0" Classes="card" Padding="12">
+      <TextBlock Text="{Binding Summary}" FontFamily="Cascadia Mono, Consolas, monospace"
+                 FontSize="12" Foreground="#34D399" TextWrapping="Wrap" />
+    </Border>
+
+    <Border Grid.Row="2" Margin="0,12,0,0" Classes="card" Padding="12">
+      <Grid RowDefinitions="*,Auto">
+        <controls:ResultTable Rows="{Binding Rows}" KeyHeader="项目" ValueHeader="值" ExtraHeader="备注" />
+        <Border Grid.Row="1" Height="150" Margin="0,10,0,0">
+          <controls:LogView Logs="{Binding Log}" />
+        </Border>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

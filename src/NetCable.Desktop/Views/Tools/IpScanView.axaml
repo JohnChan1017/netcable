@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.IpScanView"
+             x:DataType="vm:IpScanViewModel">
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Border Grid.Row="0" Classes="card">
+      <StackPanel Spacing="10">
+        <WrapPanel Orientation="Horizontal">
+          <StackPanel Width="280" Margin="0,0,12,8">
+            <TextBlock Text="网段（CIDR 或 a-b 区间）" FontSize="11" Classes="muted" Margin="0,0,0,4" />
+            <TextBox Text="{Binding Range}" Watermark="192.168.1.0/24 或 192.168.1.1-192.168.1.60" />
+          </StackPanel>
+          <StackPanel Width="130" Margin="0,0,12,8">
+            <TextBlock Text="并发数" FontSize="11" Classes="muted" Margin="0,0,0,4" />
+            <NumericUpDown Value="{Binding Concurrency}" Minimum="1" Maximum="512" Increment="32" ShowButtonSpinner="False" />
+          </StackPanel>
+          <StackPanel Width="130" Margin="0,0,12,8">
+            <TextBlock Text="超时 (ms)" FontSize="11" Classes="muted" Margin="0,0,0,4" />
+            <NumericUpDown Value="{Binding Timeout}" Minimum="200" Maximum="10000" Increment="100" ShowButtonSpinner="False" />
+          </StackPanel>
+          <CheckBox Content="解析主机名" IsChecked="{Binding ResolveHostNames}"
+                    VerticalAlignment="Bottom" Margin="0,0,12,12" />
+          <CheckBox Content="解析 MAC" IsChecked="{Binding ResolveMacAddresses}"
+                    VerticalAlignment="Bottom" Margin="0,0,12,12" />
+        </WrapPanel>
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <Button Classes="primary" Content="开始扫描" Command="{Binding RunCommand}" IsEnabled="{Binding !IsRunning}" />
+          <Button Classes="ghost" Content="停止" Command="{Binding CancelCommand}" IsEnabled="{Binding IsRunning}" />
+          <TextBlock Text="{Binding StatusText}" Classes="muted" VerticalAlignment="Center" FontSize="12" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Margin="0,12,0,0" Classes="card" Padding="12">
+      <TextBlock Text="{Binding Summary}" FontFamily="Cascadia Mono, Consolas, monospace"
+                 FontSize="12" Foreground="#34D399" TextWrapping="Wrap" />
+    </Border>
+
+    <Border Grid.Row="2" Margin="0,12,0,0" Classes="card" Padding="12">
+      <Grid RowDefinitions="*,Auto">
+        <controls:ResultTable Rows="{Binding Rows}" KeyHeader="IP 地址" ValueHeader="状态"
+                              ExtraHeader="延迟 · 主机名 · MAC · 厂商" />
+        <Border Grid.Row="1" Height="150" Margin="0,10,0,0">
+          <controls:LogView Logs="{Binding Log}" />
+        </Border>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

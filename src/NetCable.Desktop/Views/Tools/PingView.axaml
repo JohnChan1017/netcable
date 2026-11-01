@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.PingView"
+             x:DataType="vm:PingViewModel">
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Border Grid.Row="0" Classes="card">
+      <StackPanel Spacing="10">
+        <WrapPanel Orientation="Horizontal">
+          <StackPanel Width="260" Margin="0,0,12,8">
+            <TextBlock Text="目标主机" FontSize="11" Classes="muted" Margin="0,0,0,4" />
+            <TextBox Text="{Binding Host}" Watermark="example.com 或 1.1.1.1" />
+          </StackPanel>
+          <StackPanel Width="110" Margin="0,0,12,8">
+            <TextBlock Text="次数" FontSize="11" Classes="muted" Margin="0,0,0,4" />
+            <NumericUpDown Value="{Binding Count}" Minimum="1" Maximum="200" Increment="1" ShowButtonSpinner="False" />
+          </StackPanel>
+          <StackPanel Width="130" Margin="0,0,12,8">
+            <TextBlock Text="超时 (ms)" FontSize="11" Classes="muted" Margin="0,0,0,4" />
+            <NumericUpDown Value="{Binding Timeout}" Minimum="100" Maximum="30000" Increment="100" ShowButtonSpinner="False" />
+          </StackPanel>
+          <StackPanel Width="120" Margin="0,0,12,8">
+            <TextBlock Text="载荷 (B)" FontSize="11" Classes="muted" Margin="0,0,0,4" />
+            <NumericUpDown Value="{Binding BufferSize}" Minimum="0" Maximum="65500" Increment="8" ShowButtonSpinner="False" />
+          </StackPanel>
+          <StackPanel Width="130" Margin="0,0,12,8">
+            <TextBlock Text="间隔 (ms)" FontSize="11" Classes="muted" Margin="0,0,0,4" />
+            <NumericUpDown Value="{Binding Interval}" Minimum="0" Maximum="10000" Increment="100" ShowButtonSpinner="False" />
+          </StackPanel>
+        </WrapPanel>
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <Button Classes="primary" Content="开始" Command="{Binding RunCommand}" IsEnabled="{Binding !IsRunning}" />
+          <Button Classes="ghost" Content="停止" Command="{Binding CancelCommand}" IsEnabled="{Binding IsRunning}" />
+          <TextBlock Text="{Binding StatusText}" Classes="muted" VerticalAlignment="Center" FontSize="12" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Margin="0,12,0,0" Classes="card" Padding="12">
+      <TextBlock Text="{Binding Summary}" FontFamily="Cascadia Mono, Consolas, monospace" FontSize="12" Foreground="#34D399" />
+    </Border>
+
+    <Border Grid.Row="2" Margin="0,12,0,0" Classes="card" Padding="12">
+      <controls:LogView Logs="{Binding Log}" />
+    </Border>
+  </Grid>
+</UserControl>

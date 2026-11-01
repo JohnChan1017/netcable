@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.ConnectionsView"
+             x:DataType="vm:ConnectionsViewModel">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0" Classes="card">
+      <StackPanel Orientation="Horizontal" Spacing="10">
+        <Button Classes="primary" Content="刷新" Command="{Binding RunCommand}" IsEnabled="{Binding !IsRunning}" />
+        <Button Classes="ghost" Content="停止" Command="{Binding CancelCommand}" IsEnabled="{Binding IsRunning}" />
+        <TextBlock Text="{Binding Summary}" FontFamily="Cascadia Mono, Consolas, monospace" FontSize="12"
+                   Foreground="#34D399" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding StatusText}" Classes="muted" VerticalAlignment="Center" FontSize="12" />
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Margin="0,12,0,0" Classes="card" Padding="12">
+      <DockPanel>
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="60,250,250,110,70,*" Margin="0,0,0,6">
+          <TextBlock Grid.Column="0" Text="协议" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="1" Text="本地" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="2" Text="远端" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="3" Text="状态" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="4" Text="PID" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="5" Text="进程" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+        </Grid>
+        <Border DockPanel.Dock="Top" Height="1" Background="#22304A" Margin="0,0,0,4" />
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <ItemsControl ItemsSource="{Binding Connections}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:ConnectionRow">
+                <Grid ColumnDefinitions="60,250,250,110,70,*" Margin="0,2">
+                  <TextBlock Grid.Column="0" Text="{Binding Protocol}" FontSize="12" Foreground="#34D399" />
+                  <TextBlock Grid.Column="1" Text="{Binding Local}" FontSize="12" Foreground="#E2E8F0"
+                             TextTrimming="CharacterEllipsis" />
+                  <TextBlock Grid.Column="2" Text="{Binding Remote}" FontSize="12" Foreground="#CBD5E1"
+                             TextTrimming="CharacterEllipsis" />
+                  <TextBlock Grid.Column="3" Text="{Binding State}" FontSize="12" Foreground="#94A3B8" />
+                  <TextBlock Grid.Column="4" Text="{Binding Pid}" FontSize="12" Foreground="#94A3B8" />
+                  <TextBlock Grid.Column="5" Text="{Binding Process}" FontSize="12" Foreground="#94A3B8"
+                             TextTrimming="CharacterEllipsis" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+    <Border Grid.Row="2" Margin="0,12,0,0" Classes="card" Padding="12" Height="110">
+      <controls:LogView Logs="{Binding Log}" />
+    </Border>
+  </Grid>
+</UserControl>

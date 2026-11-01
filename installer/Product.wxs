@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <!--
+    NetCable MSI（WiX 5）
+    安装范围由 -d InstallScope=perUser|perMachine 控制：
+      perUser    → %LOCALAPPDATA%\Programs\NetCable，不需要管理员（默认）
+      perMachine → %ProgramFiles%\NetCable，需要管理员；所有用户可用
+    构建：scripts/build-msi.ps1 -Scope perUser|perMachine
+  -->
+  <Package Name="NetCable"
+           Manufacturer="NetCable"
+           Version="$(var.Version)"
+           UpgradeCode="8F1C2E4A-6B3D-4A9E-9C7F-2D5B8A1E6C30"
+           Scope="$(var.InstallScope)"
+           Codepage="936"
+           Compressed="yes">
+
+    <MajorUpgrade DowngradeErrorMessage="已安装更新版本的 NetCable，请先在「设置 → 应用」中卸载旧版本。" />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon" SourceFile="$(var.IconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <Property Id="ARPCOMMENTS" Value="跨平台网络工具箱（NETworkManager 移植版）" />
+
+<?if $(var.InstallScope) = "perMachine" ?>
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="NetCable" />
+    </StandardDirectory>
+<?else?>
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="NetCable" />
+      </Directory>
+    </StandardDirectory>
+<?endif?>
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="AppMenuFolder" Name="NetCable" />
+    </StandardDirectory>
+    <StandardDirectory Id="DesktopFolder" />
+
+    <Feature Id="Main" Title="NetCable" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+
+    <!-- 应用文件：由 -d SourceDir=<publish 输出目录> 传入，自动收集全部文件 -->
+    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+      <Files Include="$(var.SourceDir)\**" />
+    </ComponentGroup>
+
+    <!-- HKMU = 按安装范围自动选择 HKLM（perMachine）或 HKCU（perUser） -->
+    <Component Id="StartMenuShortcut" Directory="AppMenuFolder" Guid="B1C4E7A2-3D58-4F61-9A0C-7E2B5D8F1A44">
+      <Shortcut Id="StartMenuLnk"
+                Name="NetCable"
+                Description="跨平台网络工具箱"
+                Target="[INSTALLFOLDER]NetCable.exe"
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="AppIcon" />
+      <RemoveFolder Id="RemoveAppMenuFolder" On="uninstall" />
+      <RegistryValue Root="HKMU" Key="Software\NetCable" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <Component Id="DesktopShortcut" Directory="DesktopFolder" Guid="C2D5F8B3-4E69-4A72-8B1D-9F3C6E0A2B55">
+      <Shortcut Id="DesktopLnk"
+                Name="NetCable"
+                Description="跨平台网络工具箱"
+                Target="[INSTALLFOLDER]NetCable.exe"
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="AppIcon" />
+      <RegistryValue Root="HKMU" Key="Software\NetCable" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <!-- 标准安装向导（可选择安装目录；WixUI_InstallDir 自带 WIXUI_INSTALLDIR 与 ARPNOMODIFY） -->
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
+
+  </Package>
+</Wix>

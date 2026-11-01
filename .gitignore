@@ -1,0 +1,22 @@
+# 构建产物
+.cache/
+.dist/
+bin/
+obj/
+*.user
+.vs/
+
+# 发布/打包中间产物（源码仓库不存二进制发布物，走 GitHub Release）
+artifacts/
+artifacts/publish/
+artifacts/publish-exe-check.png
+artifacts/*.png
+
+# 可选的本机安装包（Npcap 再分发需要 OEM 授权）
+redist/*.exe
+
+# 系统文件
+Thumbs.db
+.DS_Store
+# 本机离线 NuGet 源（仅本机构建用，由 scripts/build.ps1 生成到临时目录）
+NuGet.Config

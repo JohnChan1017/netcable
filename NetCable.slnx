@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NetCable.Core/NetCable.Core.csproj" />
+    <Project Path="src/NetCable.Desktop/NetCable.Desktop.csproj" />
+    <Project Path="src/NetCable.Services.Lookup/NetCable.Services.Lookup.csproj" />
+    <Project Path="src/NetCable.Services.Network/NetCable.Services.Network.csproj" />
+    <Project Path="src/NetCable.Services.Platform/NetCable.Services.Platform.csproj" />
+  </Folder>
+</Solution>

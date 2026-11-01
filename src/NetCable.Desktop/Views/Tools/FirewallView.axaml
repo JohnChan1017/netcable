@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.FirewallView"
+             x:DataType="vm:FirewallViewModel">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0" Classes="card">
+      <StackPanel Spacing="10">
+        <TextBlock Text="防火墙状态" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+        <TextBlock Text="{Binding StatusLine}" FontFamily="Cascadia Mono, Consolas, monospace"
+                   FontSize="13" Foreground="#34D399" TextWrapping="Wrap" />
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <Button Classes="primary" Content="刷新" Command="{Binding RunCommand}" IsEnabled="{Binding !IsRunning}" />
+          <Button Classes="ghost" Content="停止" Command="{Binding CancelCommand}" IsEnabled="{Binding IsRunning}" />
+          <TextBlock Text="{Binding Summary}" FontFamily="Cascadia Mono, Consolas, monospace" FontSize="12"
+                     Foreground="#34D399" VerticalAlignment="Center" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding StatusText}" Classes="muted" VerticalAlignment="Center" FontSize="12" />
+        </StackPanel>
+        <TextBlock Text="{Binding Notice}" FontSize="11" Foreground="#F59E0B" TextWrapping="Wrap" />
+        <controls:ResultTable Rows="{Binding Rows}" KeyHeader="项目" ValueHeader="结果" ExtraHeader="" />
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Margin="0,12,0,0" Classes="card" Padding="12">
+      <DockPanel>
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,64,70,80,110,150,56" Margin="0,0,0,6">
+          <TextBlock Grid.Column="0" Text="规则名称" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="1" Text="方向" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="2" Text="动作" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="3" Text="协议" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="4" Text="端口" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="5" Text="远端地址" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <TextBlock Grid.Column="6" Text="启用" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+        </Grid>
+        <Border DockPanel.Dock="Top" Height="1" Background="#22304A" Margin="0,0,0,4" />
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <ItemsControl ItemsSource="{Binding Rules}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:FirewallRow">
+                <Grid ColumnDefinitions="*,64,70,80,110,150,56" Margin="0,2">
+                  <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="12" Foreground="#E2E8F0"
+                             TextTrimming="CharacterEllipsis" />
+                  <TextBlock Grid.Column="1" Text="{Binding Direction}" FontSize="12" Foreground="#94A3B8" />
+                  <TextBlock Grid.Column="2" Text="{Binding Action}" FontSize="12" Foreground="#34D399" />
+                  <TextBlock Grid.Column="3" Text="{Binding Protocol}" FontSize="12" Foreground="#CBD5E1" />
+                  <TextBlock Grid.Column="4" Text="{Binding LocalPort}" FontSize="12" Foreground="#CBD5E1"
+                             TextTrimming="CharacterEllipsis" />
+                  <TextBlock Grid.Column="5" Text="{Binding RemoteAddress}" FontSize="12" Foreground="#94A3B8"
+                             TextTrimming="CharacterEllipsis" />
+                  <TextBlock Grid.Column="6" Text="{Binding Enabled}" FontSize="12" Foreground="#CBD5E1" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+    <Border Grid.Row="2" Margin="0,12,0,0" Classes="card" Padding="12" Height="110">
+      <controls:LogView Logs="{Binding Log}" />
+    </Border>
+  </Grid>
+</UserControl>

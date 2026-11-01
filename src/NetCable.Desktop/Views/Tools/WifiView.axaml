@@ -1,0 +1,223 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.WifiView"
+             x:DataType="vm:WifiViewModel">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Spacing="12">
+
+      <!-- 工具栏 -->
+      <Border Classes="card">
+        <StackPanel Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button Classes="primary" Content="刷新 / 扫描" Command="{Binding RunCommand}"
+                    IsEnabled="{Binding !IsRunning}" />
+            <Button Classes="ghost" Content="停止" Command="{Binding StopAllCommand}" />
+            <TextBlock Text="{Binding StatusText}" Classes="muted" VerticalAlignment="Center" FontSize="12" />
+          </StackPanel>
+          <TextBlock Text="{Binding Summary}" FontFamily="Cascadia Mono, Consolas, monospace" FontSize="12"
+                     Foreground="#34D399" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding Notice}" FontSize="11" Classes="muted" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
+      <!-- 区块 A：AP 详情（802.11 管理帧 IE，需管理员授权） -->
+      <Border Classes="card" Padding="12">
+        <StackPanel Spacing="8">
+          <TextBlock Text="AP 详情（802.11 管理帧 IE）" FontSize="12" FontWeight="SemiBold"
+                     Foreground="#E2E8F0" />
+          <TextBlock Text="{Binding BssStateText}" FontFamily="Cascadia Mono, Consolas, monospace"
+                     FontSize="12" Foreground="#F59E0B" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding BssNotice}" FontSize="11" Classes="muted" TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button Classes="primary" Content="以管理员权限读取" Command="{Binding ReadBssElevatedCommand}"
+                    IsEnabled="{Binding CanRequestElevation}" />
+            <Button Classes="ghost" Content="停止提权读取" Command="{Binding StopAllCommand}"
+                    IsEnabled="{Binding IsElevatedRunning}" />
+            <TextBlock Text="读取 WLAN AP 详情需要管理员授权（UAC）" FontSize="11" Classes="dim"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <StackPanel Spacing="4" IsVisible="{Binding HasBssRows}">
+            <Grid ColumnDefinitions="130,130,46,64,64,58,88,78,70,84,*" Margin="0,4,0,4">
+              <TextBlock Grid.Column="0" Text="SSID" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="1" Text="BSSID" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="2" Text="信道" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="3" Text="频段" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="4" Text="RSSI" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="5" Text="Beacon" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="6" Text="加密" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="7" Text="Cipher" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="8" Text="AKM" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="9" Text="PHY" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="10" Text="厂商" FontSize="11" Foreground="#94A3B8" />
+            </Grid>
+            <Border Height="1" Background="#22304A" Margin="0,0,0,4" />
+            <ListBox ItemsSource="{Binding BssRows}" SelectedItem="{Binding SelectedBss}"
+                     Height="170" Background="Transparent" BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+              <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                  <Setter Property="Padding" Value="0" />
+                  <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                  <Setter Property="Background" Value="Transparent" />
+                </Style>
+              </ListBox.Styles>
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:WifiBssRow">
+                  <Grid ColumnDefinitions="130,130,46,64,64,58,88,78,70,84,*" Margin="0,2">
+                    <TextBlock Grid.Column="0" Text="{Binding Ssid}" FontSize="12" Foreground="#E2E8F0"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="1" Text="{Binding Bssid}" FontSize="11"
+                               FontFamily="Cascadia Mono, Consolas, monospace" Foreground="#CBD5E1" />
+                    <TextBlock Grid.Column="2" Text="{Binding Channel}" FontSize="12" Foreground="#CBD5E1" />
+                    <TextBlock Grid.Column="3" Text="{Binding Band}" FontSize="12" Foreground="#94A3B8" />
+                    <TextBlock Grid.Column="4" Text="{Binding Rssi}" FontSize="12" Foreground="#34D399" />
+                    <TextBlock Grid.Column="5" Text="{Binding BeaconInterval}" FontSize="12" Foreground="#94A3B8" />
+                    <TextBlock Grid.Column="6" Text="{Binding Security}" FontSize="12" Foreground="#CBD5E1"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="7" Text="{Binding Cipher}" FontSize="12" Foreground="#94A3B8"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="8" Text="{Binding Akm}" FontSize="12" Foreground="#94A3B8"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="9" Text="{Binding PhyType}" FontSize="12" Foreground="#94A3B8"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="10" Text="{Binding Vendor}" FontSize="12" Foreground="#94A3B8"
+                               TextTrimming="CharacterEllipsis" />
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+
+            <StackPanel Spacing="4" IsVisible="{Binding HasSelectedBss}">
+              <TextBlock Text="选中 AP 的信息元素（IE）" FontSize="11" FontWeight="SemiBold"
+                         Foreground="#94A3B8" Margin="0,6,0,0" />
+              <controls:ResultTable Rows="{Binding SelectedBss.IeRows}" KeyHeader="信息元素"
+                                    ValueHeader="解析值" ExtraHeader="" />
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- 区块 B：802.11 管理帧捕获（monitor mode） -->
+      <Border Classes="card" Padding="12">
+        <StackPanel Spacing="8">
+          <TextBlock Text="802.11 管理帧捕获（monitor mode）" FontSize="12" FontWeight="SemiBold"
+                     Foreground="#E2E8F0" />
+          <TextBlock Text="{Binding MonitorStateText}" FontFamily="Cascadia Mono, Consolas, monospace"
+                     FontSize="12" Foreground="#F59E0B" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding MonitorNotice}" FontSize="11" Classes="dim" TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="时长" FontSize="11" Classes="muted" VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{Binding MonitorDurations}" SelectedItem="{Binding MonitorSeconds}"
+                      Width="96" />
+            <Button Classes="primary" Content="开始捕获" Command="{Binding StartMonitorCommand}"
+                    IsEnabled="{Binding MonitorSupported}" />
+            <Button Classes="ghost" Content="停止捕获" Command="{Binding StopAllCommand}"
+                    IsEnabled="{Binding IsElevatedRunning}" />
+            <TextBlock Text="monitor mode 捕获需要管理员授权（UAC）" FontSize="11" Classes="dim"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <StackPanel Spacing="4" IsVisible="{Binding HasFrames}">
+            <Grid ColumnDefinitions="80,80,130,130,130,140,50,60,60,*" Margin="0,4,0,4">
+              <TextBlock Grid.Column="0" Text="类型" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="1" Text="子类型" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="2" Text="源地址" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="3" Text="目的地址" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="4" Text="BSSID" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="5" Text="SSID" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="6" Text="信道" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="7" Text="RSSI" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="8" Text="序号" FontSize="11" Foreground="#94A3B8" />
+              <TextBlock Grid.Column="9" Text="备注" FontSize="11" Foreground="#94A3B8" />
+            </Grid>
+            <Border Height="1" Background="#22304A" Margin="0,0,0,4" />
+            <ScrollViewer Height="160" HorizontalScrollBarVisibility="Disabled">
+              <ItemsControl ItemsSource="{Binding Frames}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:WifiFrameRow">
+                    <Grid ColumnDefinitions="80,80,130,130,130,140,50,60,60,*" Margin="0,2">
+                      <TextBlock Grid.Column="0" Text="{Binding FrameType}" FontSize="12" Foreground="#34D399" />
+                      <TextBlock Grid.Column="1" Text="{Binding SubType}" FontSize="12" Foreground="#CBD5E1"
+                                 TextTrimming="CharacterEllipsis" />
+                      <TextBlock Grid.Column="2" Text="{Binding Source}" FontSize="11"
+                                 FontFamily="Cascadia Mono, Consolas, monospace" Foreground="#E2E8F0" />
+                      <TextBlock Grid.Column="3" Text="{Binding Destination}" FontSize="11"
+                                 FontFamily="Cascadia Mono, Consolas, monospace" Foreground="#CBD5E1" />
+                      <TextBlock Grid.Column="4" Text="{Binding Bssid}" FontSize="11"
+                                 FontFamily="Cascadia Mono, Consolas, monospace" Foreground="#CBD5E1" />
+                      <TextBlock Grid.Column="5" Text="{Binding Ssid}" FontSize="12" Foreground="#E2E8F0"
+                                 TextTrimming="CharacterEllipsis" />
+                      <TextBlock Grid.Column="6" Text="{Binding Channel}" FontSize="12" Foreground="#94A3B8" />
+                      <TextBlock Grid.Column="7" Text="{Binding Rssi}" FontSize="12" Foreground="#94A3B8" />
+                      <TextBlock Grid.Column="8" Text="{Binding Sequence}" FontSize="12" Foreground="#94A3B8" />
+                      <TextBlock Grid.Column="9" Text="{Binding Detail}" FontSize="11" Foreground="#94A3B8"
+                                 TextTrimming="CharacterEllipsis" />
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- 原有区块：当前连接 -->
+      <Border Classes="card" Padding="12">
+        <DockPanel>
+          <TextBlock DockPanel.Dock="Top" Text="当前连接（系统命令）" FontSize="11" FontWeight="SemiBold"
+                     Foreground="#94A3B8" Margin="0,0,0,8" />
+          <controls:ResultTable Rows="{Binding Rows}" KeyHeader="项目" ValueHeader="值" ExtraHeader="" />
+        </DockPanel>
+      </Border>
+
+      <!-- 原有区块：周边 AP -->
+      <Border Classes="card" Padding="12">
+        <DockPanel>
+          <TextBlock DockPanel.Dock="Top" Text="周边 AP（按信号强度排序）" FontSize="11" FontWeight="SemiBold"
+                     Foreground="#94A3B8" />
+          <Grid DockPanel.Dock="Top" ColumnDefinitions="64,*,72,64,90,110" Margin="0,8,0,4">
+            <TextBlock Grid.Column="0" Text="状态" FontSize="11" Foreground="#94A3B8" />
+            <TextBlock Grid.Column="1" Text="SSID" FontSize="11" Foreground="#94A3B8" />
+            <TextBlock Grid.Column="2" Text="信号" FontSize="11" Foreground="#94A3B8" />
+            <TextBlock Grid.Column="3" Text="信道" FontSize="11" Foreground="#94A3B8" />
+            <TextBlock Grid.Column="4" Text="频段" FontSize="11" Foreground="#94A3B8" />
+            <TextBlock Grid.Column="5" Text="加密" FontSize="11" Foreground="#94A3B8" />
+          </Grid>
+          <Border DockPanel.Dock="Top" Height="1" Background="#22304A" Margin="0,0,0,4" />
+          <ScrollViewer Height="150" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding AccessPoints}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:WifiApRow">
+                  <Grid ColumnDefinitions="64,*,72,64,90,110" Margin="0,2">
+                    <TextBlock Grid.Column="0" Text="{Binding StateText}" FontSize="11" Foreground="#34D399" />
+                    <TextBlock Grid.Column="1" Text="{Binding Ssid}" FontSize="12" Foreground="#E2E8F0"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="2" Text="{Binding Signal}" FontSize="12" Foreground="#34D399" />
+                    <TextBlock Grid.Column="3" Text="{Binding Channel}" FontSize="12" Foreground="#CBD5E1" />
+                    <TextBlock Grid.Column="4" Text="{Binding Band}" FontSize="12" Foreground="#94A3B8" />
+                    <TextBlock Grid.Column="5" Text="{Binding Security}" FontSize="12" Foreground="#94A3B8"
+                               TextTrimming="CharacterEllipsis" />
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </DockPanel>
+      </Border>
+
+      <!-- 日志 -->
+      <Border Classes="card" Padding="12">
+        <StackPanel Spacing="8">
+          <TextBlock Text="日志" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+          <Border Height="130">
+            <controls:LogView Logs="{Binding Log}" />
+          </Border>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

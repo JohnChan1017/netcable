@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "title": "项目示例拓扑（非真实网络）",
+    "subtitle": "NetCable 示例数据 · 8 台设备 / 7 条链路 · 在线 7 / 离线 1",
+    "canvas": { "width": 1600, "height": 1000 },
+    "legend": [
+      { "kind": "line", "tone": "online", "label": "链路正常（目标在线）" },
+      { "kind": "line", "tone": "offline", "label": "链路异常（目标离线）" },
+      { "kind": "dot", "tone": "online", "label": "在线设备" },
+      { "kind": "dot", "tone": "offline", "label": "离线设备" }
+    ],
+    "footer": {
+      "source": "数据来源：NetCable-v1 README 截图 “Mapeamento geral de rede”",
+      "note": "本图为上游项目的演示数据，不是本机网络的真实拓扑；连线箭头指向目标设备，颜色取自目标设备状态（目标离线 → 红色，正常 → 绿色）",
+      "meta": "1600 × 1000 · 设备 8 · 链路 7"
+    }
+  },
+  "devices": [
+    { "id": "firewall", "name": "防火墙", "ip": "192.168.83.7", "kind": "firewall", "status": "online", "latency_ms": 0.62, "x": 200, "y": 520 },
+    { "id": "aruba", "name": "Aruba 交换机", "ip": "192.168.80.43", "kind": "switch", "status": "online", "latency_ms": 0.63, "x": 600, "y": 520 },
+    { "id": "eng", "name": "工程部交换机", "ip": "192.168.83.245", "kind": "switch", "status": "online", "latency_ms": 0.83, "x": 1000, "y": 520 },
+    { "id": "ap", "name": "UniFi 无线接入点", "ip": "192.168.83.247", "kind": "ap", "status": "online", "latency_ms": 0.62, "x": 600, "y": 200 },
+    { "id": "truenas", "name": "TrueNAS 实验室", "ip": "192.168.80.42", "kind": "nas", "status": "online", "latency_ms": 0.7, "x": 600, "y": 840 },
+    { "id": "printer", "name": "理光 501 打印机", "ip": "192.168.83.111", "kind": "printer", "status": "online", "latency_ms": 0.26, "x": 1400, "y": 520 },
+    { "id": "linux", "name": "Linux Mint 台式机", "ip": "192.168.83.1", "kind": "desktop", "status": "offline", "latency_ms": null, "x": 1400, "y": 200 },
+    { "id": "windows", "name": "Windows 11 台式机", "ip": "192.168.83.195", "kind": "desktop", "status": "online", "latency_ms": 0.16, "x": 1400, "y": 840 }
+  ],
+  "links": [
+    { "from": "firewall", "to": "aruba", "route": "straight" },
+    { "from": "aruba", "to": "ap", "route": "straight" },
+    { "from": "aruba", "to": "truenas", "route": "straight" },
+    { "from": "aruba", "to": "eng", "route": "straight" },
+    { "from": "eng", "to": "printer", "route": "straight" },
+    { "from": "eng", "to": "linux", "route": "trunk", "trunk_x": 1210, "start_offset": -26 },
+    { "from": "eng", "to": "windows", "route": "trunk", "trunk_x": 1210, "start_offset": 26 }
+  ]
+}

@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NetCable.Desktop.ViewModels"
+        x:Class="NetCable.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="NetCable — 跨平台网络工具箱"
+        Icon="/Assets/netcable.ico"
+        Width="1240" Height="820"
+        MinWidth="980" MinHeight="640"
+        Background="#0B1220"
+        FontFamily="Microsoft YaHei UI, PingFang SC, Noto Sans CJK SC, Inter, sans-serif"
+        WindowStartupLocation="CenterScreen">
+  <Grid ColumnDefinitions="266,*">
+    <Border Grid.Column="0" Background="#0D1524" BorderBrush="#1B2740" BorderThickness="0,0,1,0">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="18,18,16,8" Spacing="3">
+          <TextBlock Text="NetCable" FontSize="21" FontWeight="Bold" Foreground="#34D399" />
+          <TextBlock Text="NETworkManager · 跨平台版" FontSize="11" Classes="dim" />
+        </StackPanel>
+        <Border DockPanel.Dock="Bottom" Padding="16,10" BorderBrush="#1B2740" BorderThickness="0,1,0,0">
+          <TextBlock Text="{Binding PlatformLine}" FontSize="10" Classes="dim" TextWrapping="Wrap" />
+        </Border>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <ItemsControl ItemsSource="{Binding Groups}" Margin="8,0,8,10">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:ToolGroupViewModel">
+                <StackPanel>
+                  <TextBlock Text="{Binding Title}" Classes="groupHeader" />
+                  <ItemsControl ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:ToolItemViewModel">
+                        <Button Classes="tool" Classes.selected="{Binding IsSelected}" Command="{Binding SelectCommand}">
+                          <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding Title}" VerticalAlignment="Center" />
+                            <Border Grid.Column="1" Classes="badge" IsVisible="{Binding IsPending}" VerticalAlignment="Center">
+                              <TextBlock Text="计划" FontSize="9" Classes="dim" />
+                            </Border>
+                          </Grid>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+    <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto">
+      <Border Grid.Row="0" Padding="22,16" BorderBrush="#1B2740" BorderThickness="0,0,0,1">
+        <StackPanel Spacing="4">
+          <TextBlock Text="{Binding CurrentTitle}" FontSize="19" FontWeight="SemiBold" Foreground="#F1F5F9" />
+          <TextBlock Text="{Binding CurrentDescription}" FontSize="12" Classes="muted" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+      <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" Margin="22,18" />
+      <Border Grid.Row="2" Padding="18,7" BorderBrush="#1B2740" BorderThickness="0,1,0,0">
+        <TextBlock Text="{Binding PlatformLine}" FontSize="10" Classes="dim" />
+      </Border>
+    </Grid>
+  </Grid>
+</Window>

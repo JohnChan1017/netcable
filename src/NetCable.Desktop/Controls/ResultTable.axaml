@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Controls.ResultTable"
+             x:DataType="controls:ResultTable" x:Name="Root">
+  <ScrollViewer>
+    <StackPanel>
+      <Grid ColumnDefinitions="140,220,*" Margin="0,0,0,6">
+        <TextBlock Grid.Column="0" Text="{Binding #Root.KeyHeader}" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+        <TextBlock Grid.Column="1" Text="{Binding #Root.ValueHeader}" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+        <TextBlock Grid.Column="2" Text="{Binding #Root.ExtraHeader}" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+      </Grid>
+      <Border Height="1" Background="#22304A" Margin="0,0,0,4" />
+      <ItemsControl ItemsSource="{Binding #Root.Rows}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:ResultRow">
+            <Grid ColumnDefinitions="140,220,*" Margin="0,2">
+              <TextBlock Grid.Column="0" Text="{Binding Key}" FontSize="12" Foreground="#E2E8F0" />
+              <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="12" Foreground="#34D399" TextWrapping="Wrap" />
+              <TextBlock Grid.Column="2" Text="{Binding Extra}" FontSize="12" Foreground="#94A3B8" TextWrapping="Wrap" />
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

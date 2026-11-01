@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NetCable.Desktop.ViewModels.Tools"
+             xmlns:controls="using:NetCable.Desktop.Controls"
+             x:Class="NetCable.Desktop.Views.Tools.LookupView"
+             x:DataType="vm:LookupViewModel">
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Border Grid.Row="0" Classes="card">
+      <StackPanel Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <StackPanel Width="300">
+            <TextBlock Text="MAC 地址或 OUI 前缀" FontSize="11" Classes="muted" Margin="0,0,0,4" />
+            <TextBox Text="{Binding MacAddress}" Watermark="3C:5A:B4:11:22:33 或 3C5AB4" />
+          </StackPanel>
+          <Button Classes="primary" Content="查询厂商" Command="{Binding LookupCommand}" VerticalAlignment="Bottom" />
+        </StackPanel>
+        <TextBlock Text="{Binding Summary}" FontSize="12" Foreground="#34D399" />
+      </StackPanel>
+    </Border>
+    <Border Grid.Row="1" Margin="0,12,0,0" Classes="card">
+      <controls:ResultTable Rows="{Binding Rows}" KeyHeader="项目" ValueHeader="结果" ExtraHeader="" />
+    </Border>
+    <Border Grid.Row="2" Margin="0,12,0,0" Classes="card" Padding="12">
+      <controls:LogView Logs="{Binding Log}" />
+    </Border>
+  </Grid>
+</UserControl>
