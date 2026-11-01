@@ -8,6 +8,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   DOTNET_VERSION: '10.0.x'
   DOTNET_NOLOGO: '1'
