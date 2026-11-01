@@ -60,25 +60,31 @@
 
 ## 六、申请后的接入步骤（拿到证书后）
 
-1. 在 SignPath 后台创建 project / signing policy（如 `release-signing`）
-2. 在 GitHub 仓库添加 Secret：`SIGNPATH_API_TOKEN`（SignPath 生成）
-3. 在 `.github/workflows/build.yml` 的 Windows job 末尾加：
+> ✅ **CI 侧已接好**：`.github/workflows/build.yml` 里已经内置 SignPath 签名步骤，
+> 默认全部跳过；只要填上下面 4 个配置项就自动生效，**不需要再改 workflow 文件**。
 
-```yaml
-      - name: Sign artifacts
-        uses: signpath/github-action-submit-signing-request@v1
-        if: startsWith(github.ref, 'refs/tags/v')
-        with:
-          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
-          organization-id: '<SignPath organization id>'
-          project-slug: 'netcable'
-          signing-policy-slug: 'release-signing'
-          github-artifact-id: '<uploaded artifact id>'
-          wait-for-completion: true
-          output-artifact-directory: 'signed/'
-```
+1. 在 SignPath 后台创建 project（slug 建议 `netcable`）与 signing policy（建议 `release-signing`），
+   签名策略里勾选：`NetCable.exe`（PE）、`*.msi`（MSI 需允许"sign MSI"或对内部文件签名）。
+2. 在 GitHub 仓库 **Settings → Secrets and variables → Actions** 配置：
 
-4. 把 Release 上传步骤改为上传 `signed/` 目录中的产物。
+| 类型 | 名称 | 值 |
+| --- | --- | --- |
+| Secret | `SIGNPATH_API_TOKEN` | SignPath 生成的 API Token |
+| Variable | `SIGNPATH_ORGANIZATION_ID` | SignPath 组织 ID |
+| Variable | `SIGNPATH_PROJECT_SLUG` | `netcable` |
+| Variable | `SIGNPATH_SIGNING_POLICY_SLUG` | `release-signing` |
+
+3. 填好后打 tag（`git tag v1.0.1 && git push origin v1.0.1`）验证：
+   - CI 会先把未签名产物（`out/*.msi` + `out/win-x64/NetCable.exe`）上传为 artifact `unsigned-windows`
+   - `Submit signing request to SignPath` 等待签名完成（`wait-for-completion: true`）
+   - `Replace with signed binaries and repack` 用签名后的 exe/MSI 覆盖并重新打 portable zip
+   - `Verify signatures` 用 `Get-AuthenticodeSignature` 校验，**状态必须是 `Valid`**，否则 CI 失败
+   - Release 上传 `out/*.msi` 与 `out/*.zip` → 即签名后的产物
+
+4. 若 `SIGNPATH_PROJECT_SLUG` 留空，签名步骤自动跳过，CI 与现在行为完全一致。
+
+> 注意：`signpath/github-action-submit-signing-request@v1` 的版本号以 SignPath 官方文档为准，
+> 如官方发布新主版本，可把 `@v1` 改为对应 tag。
 
 ## 七、附：当前版本信息（填写申请表时可用）
 

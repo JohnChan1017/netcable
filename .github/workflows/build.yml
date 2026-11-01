@@ -91,6 +91,70 @@ jobs:
           Compress-Archive -Path "out/win-x64/*" -DestinationPath "out/NetCable-$env:NC_VERSION-win-x64-portable.zip" -CompressionLevel Optimal
           Get-ChildItem out | Select-Object Name, @{n='MB';e={[math]::Round($_.Length/1MB,1)}} | Format-Table -AutoSize
 
+      # ============================================================
+      # SignPath 代码签名（默认禁用）
+      #
+      # 启用条件（仓库 Settings → Secrets and variables → Actions）：
+      #   Variables:
+      #     SIGNPATH_ORGANIZATION_ID      SignPath 组织 ID
+      #     SIGNPATH_PROJECT_SLUG         netcable
+      #     SIGNPATH_SIGNING_POLICY_SLUG  release-signing
+      #   Secrets:
+      #     SIGNPATH_API_TOKEN            SignPath 生成的 API Token
+      #
+      # 只要 SIGNPATH_PROJECT_SLUG 为空，以下步骤全部跳过（CI 行为不变）。
+      # 证书/Token 就绪后：填上变量即可自动签名，无需改本文件。
+      # ============================================================
+      - name: Upload unsigned artifacts for signing
+        id: unsigned
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-windows
+          path: |
+            out/*.msi
+            out/win-x64/NetCable.exe
+          if-no-files-found: error
+
+      - name: Submit signing request to SignPath
+        id: sign
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: out/signed
+
+      - name: Replace with signed binaries and repack
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        shell: pwsh
+        run: |
+          # 签名后的 exe 覆盖回 publish 目录，MSI 覆盖回 out/
+          $signedExe = Get-ChildItem out/signed -Recurse -Filter NetCable.exe | Select-Object -First 1
+          if (-not $signedExe) { throw "签名产物里找不到 NetCable.exe" }
+          Copy-Item $signedExe.FullName out/win-x64/NetCable.exe -Force
+          Get-ChildItem out/signed -Recurse -Filter *.msi | ForEach-Object {
+            Copy-Item $_.FullName "out/$($_.Name)" -Force
+            Write-Host "已替换签名 MSI: $($_.Name)"
+          }
+          Remove-Item "out/NetCable-$env:NC_VERSION-win-x64-portable.zip" -Force -ErrorAction SilentlyContinue
+          Compress-Archive -Path "out/win-x64/*" -DestinationPath "out/NetCable-$env:NC_VERSION-win-x64-portable.zip" -CompressionLevel Optimal
+
+      - name: Verify signatures
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        shell: pwsh
+        run: |
+          $exe = Get-AuthenticodeSignature out/win-x64/NetCable.exe
+          Write-Host "NetCable.exe 签名状态: $($exe.Status)  签名者: $($exe.SignerCertificate.Subject)"
+          if ($exe.Status -ne 'Valid') { throw "NetCable.exe 签名校验失败: $($exe.Status)" }
+          Get-ChildItem out -Filter *.msi | ForEach-Object {
+            Write-Host "MSI: $($_.Name)  $([math]::Round($_.Length/1MB,1)) MB"
+          }
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
